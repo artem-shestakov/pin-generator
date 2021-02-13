@@ -1,0 +1,9 @@
+# virt ENV
+venv
+pin_and_hash
+
+# Py and IDE files
+__pycache__
+.DS_Store
+.idea
+*.pyc

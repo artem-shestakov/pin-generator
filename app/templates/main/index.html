@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    {{title}}
+{% endblock %}
+
+{% block body %}
+<div class="row justify-content-center align-items-center">
+    <div class="col-auto">
+        <h3>Микросервис для получения PIN-кода, соли и хеша SHA1</h3>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col">
+        <h5>Формат запроса:</h5>
+        <code>http://{host}:{port}/api/pin?pin_len={int}&salt_len={int}</code>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Параметр</th>
+                    <th>Обязательный</th>
+                    <th>Описание</th>
+                </tr>
+            </thead>
+            <tbody>
+                <th>1</th>
+                <td>pin_len</td>
+                <td>Да</td>
+                <td>Требуемая длина PIN кода</td>
+            </tr>
+            <tr>
+                <th>2</th>
+                <td>salt_len</td>
+                <td>Нет</td>
+                <td>Требуемая длина соли <em>(default=10)</em></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

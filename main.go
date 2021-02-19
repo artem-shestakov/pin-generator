@@ -1,14 +1,24 @@
 package main
 
 import (
-	"fmt"
+	"crypto/sha1"
+	"encoding/hex"
+	"encoding/json"
+	"log"
 	"math/rand"
-	"time"
+	"net/http"
+	"strings"
 )
 
-var numbersAndLetters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890")
-var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
+var numbersAndLetters = []rune("abcdefghijklmnopqrstuvwxyz1234567890")
+var letters = []rune("abcdefghijklmnopqrstuvwxyz")
 var numbers = []rune("1234567890")
+
+type Answer struct {
+	Pin  string
+	Salt string
+	Hash string
+}
 
 // Function generator array of rune
 func generator(length int, alphabet []rune) []rune {
@@ -29,19 +39,37 @@ func insert(str []rune, index int, value rune) []rune {
 	return str
 }
 
-func main() {
+// Getting SHA-1 hash string
+func shaHash(pin, salt string) string {
+	sha := sha1.New()
+	sha.Write([]byte(pin + salt))
+	h := sha.Sum(nil)
+	return hex.EncodeToString(h)
+}
+
+// JSON response with pin, salt and sha-1 hash
+func pinSaltHash(w http.ResponseWriter, r *http.Request) {
 	var n int = 8
-	var strong bool = true
-	var pin []rune
-	rand.Seed(time.Now().UnixNano())
-	if strong {
-		pin = generator(n-2, numbers)
-		for i := 0; i < 2; i++ {
-			pin = insert(pin, rand.Intn(len(pin)), letters[rand.Intn(len(letters))])
-		}
-		fmt.Println(string(pin))
-	} else {
-		pin = generator(n, numbers)
-		fmt.Println(string(pin))
+	pin := string(generator(n-2, numbers))
+	salt := string(generator(10, letters))
+	h := shaHash(pin, salt)
+
+	// Response
+	resp := Answer{pin, salt, strings.ToUpper(h)}
+
+	// Translate to JSON
+	js, err := json.Marshal(resp)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
+
+	// Return JSON response
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(js)
+}
+
+func main() {
+	http.HandleFunc("/api", pinSaltHash)
+	log.Fatal(http.ListenAndServe(":8080", nil))
 }

@@ -1,18 +1,22 @@
 package handlers
 
 import (
-	"log"
 	"net/http"
-	"pin-salt-hash/models"
 	"strconv"
+
+	"github.com/artem-shestakov/pin-generator/internal/app/answer"
 )
 
-// HashMux handler for Mux Server
-type HashMux struct {
-	l *log.Logger
+// APIHandler handler for request
+type APIHandler struct {
 }
 
-func (h *HashMux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+// NewAPIHandler create handler for Mux Server
+func NewAPIHandler() *APIHandler {
+	return &APIHandler{}
+}
+
+func (h *APIHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodGet {
 
 		// Getting param from request
@@ -28,7 +32,7 @@ func (h *HashMux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			saltLen = 10
 		}
 
-		answer := models.Answer{}
+		answer := answer.Answer{}
 
 		if strong == "true" || strong == "True" {
 			answer.Generate(int(pinLen), int(saltLen), true, 2)
@@ -44,9 +48,4 @@ func (h *HashMux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusMethodNotAllowed)
-}
-
-// NewHashMux create handler for Mux Server
-func NewHashMux(l *log.Logger) *HashMux {
-	return &HashMux{l}
 }

@@ -1,7 +1,13 @@
-FROM python
+FROM golang:1.13.5-alpine
+RUN apk add --no-cache git make gcc g++
+WORKDIR /go/src/app/
+COPY . .
+RUN make -f ./scripts/Makefile
+
+FROM alpine:3.10.3
 WORKDIR /app
-ADD . /app
-RUN pip install -r requirements.txt
-EXPOSE 5000
-ENV WEBAPP Prod
-ENTRYPOINT ["python3", "gserver.py"]
+COPY ./configs/ /app/configs/
+COPY --from=0 /go/src/app/api/swagger.yml ./api/
+COPY --from=0 /go/src/app/apiserver .
+EXPOSE 8080
+ENTRYPOINT ["./apiserver"]

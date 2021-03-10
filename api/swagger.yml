@@ -1,0 +1,85 @@
+basePath: /api/v1
+consumes:
+- text/plain
+definitions:
+  Answer:
+    properties:
+      hash:
+        description: SHA-1 hash of pin+salt
+        type: string
+        x-go-name: Hash
+      pin:
+        description: Pin code for user
+        type: string
+        x-go-name: Pin
+      salt:
+        description: Salt
+        type: string
+        x-go-name: Salt
+    type: object
+    x-go-package: github.com/artem-shestakov/pin-generator/internal/app/answer
+host: localhost
+info:
+  contact:
+    email: artem.s.shestakov@gmail.com.com
+    name: Artem Shestakov
+  description: Generator of pin code, salt and SHA-1 hash
+  license:
+    name: MIT
+    url: http://opensource.org/licenses/MIT
+  title: PinSaltHash API.
+  version: 1.0.0
+paths:
+  /pin:
+    get:
+      description: Returns a pin code, salt and SHA-1 hash
+      operationId: pin_code
+      parameters:
+      - description: The length of pin code
+        example: "10"
+        in: query
+        name: pin_len
+        required: true
+        type: string
+        x-go-name: PinLen
+      - default: "10"
+        description: The length of salt.
+        example: "15"
+        in: query
+        name: salt_len
+        type: string
+        x-go-name: SaltLen
+      - default: false
+        description: Add letter in pin code.
+        example: true
+        in: query
+        name: strong
+        type: boolean
+        x-go-name: Stong
+      responses:
+        "200":
+          $ref: '#/responses/answerResponse'
+        "400":
+          $ref: '#/responses/badRequest'
+        "405":
+          $ref: '#/responses/notAllowed'
+        "500":
+          $ref: '#/responses/intError'
+      tags:
+      - pin_code
+produces:
+- application/json
+responses:
+  answerResponse:
+    description: Success response to request with pin code, salt and SHA-1 hash
+    schema:
+      $ref: '#/definitions/Answer'
+  badRequest:
+    description: Method Not Allowed. Missing or incorrect parameter 'pin_len'
+  intError:
+    description: Internal server error. Unable to marshal JSON for response.
+  notAllowed:
+    description: Method Not Allowed. User GET method
+schemes:
+- http
+swagger: "2.0"

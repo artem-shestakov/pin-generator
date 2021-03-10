@@ -1,3 +1,20 @@
+// Package classification PinSaltHash API.
+//
+// Generator of pin code, salt and SHA-1 hash
+//
+//     Schemes: http
+//     Host: localhost
+//     BasePath: /api/v1
+//     Version: 1.0.0
+//     License: MIT http://opensource.org/licenses/MIT
+//     Contact: Artem Shestakov<artem.s.shestakov@gmail.com.com>
+//
+//     Consumes:
+//     - text/plain
+//
+//     Produces:
+//     - application/json
+// swagger:meta
 package main
 
 import (
@@ -5,13 +22,7 @@ import (
 	"log"
 
 	"github.com/BurntSushi/toml"
-	"github.com/artem-shestakov/pin-generator/env"
 	"github.com/artem-shestakov/pin-generator/internal/app/apiserver"
-)
-
-var (
-	listenAddres string = env.GetEnv("LISTEN_ADDRESS", "0.0.0.0")
-	listenPort   string = env.GetEnv("LISTEN_PORT", "8080")
 )
 
 var (

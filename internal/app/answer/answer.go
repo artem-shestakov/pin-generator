@@ -11,10 +11,13 @@ var numbersAndLetters = []rune("abcdefghijklmnopqrstuvwxyz1234567890")
 var letters = []rune("abcdefghijklmnopqrstuvwxyz")
 var numbers = []rune("1234567890")
 
-// Answer response to request
+// swagger:model
 type Answer struct {
-	Pin  string `json:"pin"`
+	// Pin code for user
+	Pin string `json:"pin"`
+	// Salt
 	Salt string `json:"salt"`
+	// SHA-1 hash of pin+salt
 	Hash string `json:"hash"`
 }
 

@@ -7,14 +7,14 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-// APIServer ..
+// APIServer for API requests
 type APIServer struct {
 	config *Config
 	logger *logrus.Logger
 	router *mux.Router
 }
 
-// New ...
+// New API server config
 func New(config *Config) *APIServer {
 	return &APIServer{
 		config: config,
@@ -46,5 +46,12 @@ func (s *APIServer) configureLogger() error {
 }
 
 func (s *APIServer) configureRouter() {
-	s.router.Handle("/api/v1/pin", s.handlePin())
+	// API routes
+	baseRoute := s.router.PathPrefix("/api/v1").Subrouter()
+	baseRoute.Handle("/pin", s.WithLogging(s.handlePin())).Methods("GET")
+
+	// Redoc documentation
+	s.router.Handle("/", http.RedirectHandler("/docs", 301))
+	s.router.Handle("/docs", s.WithLogging(s.Redoc())).Methods("GET")
+	s.router.Handle("/api/swagger.yml", s.WithLogging(http.FileServer(http.Dir("./"))))
 }
